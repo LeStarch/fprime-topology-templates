@@ -10,7 +10,7 @@ Template inputs are of the form `<template base name>.fppt` found in any listed 
 
 
 @copyright
-Copyright 2009-2015, by the California Institute of Technology.
+Copyright 2022, by the California Institute of Technology.
 ALL RIGHTS RESERVED.  United States Government Sponsorship
 acknowledged.
 

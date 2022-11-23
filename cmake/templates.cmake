@@ -4,7 +4,7 @@
 # Topology template support.  Calls `template-maker.py` when invoked in `make_templates(...)`. This must happen before
 # any calls to `register_fprime_...` functions
 #
-# Copyright 2009-2015, by the California Institute of Technology.
+# Copyright 2022, by the California Institute of Technology.
 # ALL RIGHTS RESERVED.  United States Government Sponsorship
 # acknowledged.
 ####
