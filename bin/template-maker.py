@@ -24,8 +24,9 @@ import sys
 import re
 
 from pathlib import Path
-from typing import Dict, List, Tuple, Union
+from typing import Any, Dict, List, Tuple, Union
 
+import yaml
 import jinja2
 
 
@@ -112,9 +113,9 @@ def manufacture_files(data: str, output_file: Path, base_template: Path) -> List
     return snippets
 
 
-def build_templates(path: Path, locations: List[str], environment: jinja2.Environment, step: int, offset: int = 0, counts: Union[Dict[str, int], None] = None) -> List[Path]:
+def build_templates(path: Path, locations: List[str], environment: jinja2.Environment, step: int, offset: int = 0,counts: Union[Dict[str, int], None] = None, config: Dict[str,Any] = None) -> List[Path]:
     """ Builds needed templates from input file """
-    base_parameters = {}  # TODO: fill with configurable parameters
+    base_parameters = {} if config is None else {**config}
     counts = {} if counts is None else counts
 
     template_invocations = get_template_invocations(path, locations)
@@ -142,7 +143,7 @@ def build_templates(path: Path, locations: List[str], environment: jinja2.Enviro
         invocations.append(invocation)
 
     recursive_template_files = [
-        build_templates(invocation, locations, environment, step, offset, counts)
+        build_templates(invocation, locations, environment, step, offset, counts, config=config)
         for invocation in invocations
     ]
     return local_template_files + snippets + list(itertools.chain.from_iterable(recursive_template_files))
@@ -155,16 +156,26 @@ def main(args: List[str]):
     parser.add_argument("--topology-files", type=Path, nargs="+", help="Paths the the main topology files")
     parser.add_argument("--offset-multiple", type=lambda x: int(x, 0),
                         help="Offset multiple for each templated topology hunk")
+    parser.add_argument("--config", type=Path, help="Path to YAML file used for configuration")
     args_ns = parser.parse_args(args)
+
+    if not args_ns.config.is_file():
+        print(f"[ERROR] {args_ns.config} is not a file.")
+        return 1
+
     try:
         # Mine out the passed in settings
         locations = args_ns.fprime_locations
         inputs = args_ns.topology_files
         offset = args_ns.offset_multiple
 
+        with open(args_ns.config, 'r') as file_handle:
+            config = yaml.safe_load(file_handle)
+
+
         # Build jinja templates
         environment = setup_environment(locations)
-        template_sets = [build_templates(path, locations, environment, offset) for path in inputs]
+        template_sets = [build_templates(path, locations, environment, offset, config=config) for path in inputs]
         [print(template_file) for template_file in set(itertools.chain.from_iterable(template_sets))]
     except Exception as exc:
         print(f"[ERROR] {exc}", file=sys.stderr)

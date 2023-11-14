@@ -16,12 +16,13 @@ set(TEMPLATES_EXECUTABLE_PATH "${CMAKE_CURRENT_LIST_DIR}/../bin/template-maker.p
 # - TEMPLATE_SOURCE_FILES: list of FPP input files
 # - OFFSET_MULTIPLE: multiple of base id steps in templates
 #####
-function(make_templates TEMPLATE_SOURCE_FILES OFFSET_MULTIPLE)
+function(make_templates TEMPLATE_SOURCE_FILES OFFSET_MULTIPLE TEMPLATE_CONFIG)
     set(EXECUTE_ARGUMENTS
         ${PYTHON} ${TEMPLATES_EXECUTABLE_PATH}
         "--fprime-locations" ${FPRIME_BUILD_LOCATIONS}
         "--topology-files" ${TEMPLATE_SOURCE_FILES}
         "--offset-multiple" "${OFFSET_MULTIPLE}"
+        "--config" "${TEMPLATE_CONFIG}"
     )
     # Print out output
     if (CMAKE_DEBUG_OUTPUT)
