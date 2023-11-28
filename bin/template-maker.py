@@ -160,7 +160,7 @@ def main(args: List[str]):
     args_ns = parser.parse_args(args)
 
     if not args_ns.config.is_file():
-        print(f"[ERROR] {args_ns.config} is not a file.")
+        print(f"[ERROR] {args_ns.config} is not a file.", file=sys.stderr)
         return 1
 
     try:
@@ -179,7 +179,6 @@ def main(args: List[str]):
         [print(template_file) for template_file in set(itertools.chain.from_iterable(template_sets))]
     except Exception as exc:
         print(f"[ERROR] {exc}", file=sys.stderr)
-        raise
         return 1
     return 0
 

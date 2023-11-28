@@ -8,6 +8,7 @@
 # ALL RIGHTS RESERVED.  United States Government Sponsorship
 # acknowledged.
 ####
+include(utilities)
 set(TEMPLATES_EXECUTABLE_PATH "${CMAKE_CURRENT_LIST_DIR}/../bin/template-maker.py")
 
 ####
@@ -24,20 +25,12 @@ function(make_templates TEMPLATE_SOURCE_FILES OFFSET_MULTIPLE TEMPLATE_CONFIG)
         "--offset-multiple" "${OFFSET_MULTIPLE}"
         "--config" "${TEMPLATE_CONFIG}"
     )
-    # Print out output
-    if (CMAKE_DEBUG_OUTPUT)
-        string(REPLACE ";" " " EXECUTE_STRING "${EXECUTE_ARGUMENTS}")
-        message(STATUS "Template Generation: ${EXECUTE_STRING}")
-    endif()
     # Execute the process
-    execute_process(COMMAND ${EXECUTE_ARGUMENTS}
+    execute_process_or_fail(
+        "Failed to run template generation"
+        ${EXECUTE_ARGUMENTS}
         OUTPUT_VARIABLE FILE_LISTING
-        RESULT_VARIABLE RESULT_CODE
     )
-    # Check result
-    if (NOT RESULT_CODE EQUAL 0)
-        message(FATAL_ERROR "Failed to run template generation.")
-    endif()
     # Mark files as templates
     string(REPLACE "\n" ";" FILE_LISTING "${FILE_LISTING}")
     foreach(FILE_ITEM IN LISTS FILE_LISTING)
